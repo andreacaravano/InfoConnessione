@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Informazioni sulla connessione ad internet in Javascript</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+              crossorigin="anonymous"/>
+        <style type="text/css">
+            table {
+                table-layout: fixed;
+            }
+            
+            td {
+                width: 50%;
+            }
+        </style>
+        <script type="text/javascript">
+            function leggiDatiPrincipali(URL, URL2) {
+                $.ajax({
+                    type: 'GET',
+                    url: URL,
+                    success: function (rispostaP) {
+                        leggiDatiSecondari(URL2, rispostaP);
+                    },
+                    error: function () {
+                        console.warn("Errore ottenimento dati da API IPInfo");
+                    }
+                });
+            }
+
+            function leggiDatiSecondari(URL, rispostaP) {
+                $.ajax({
+                    type: 'GET',
+                    url: URL,
+                    success: function (rispostaS) {
+                        Main(rispostaP, rispostaS);
+                    },
+                    error: function () {
+                        console.warn("Errore ottenimento dati da API ExtremeIPLookup");
+                    }
+                });
+            }
+
+            function ritorna(risposta, nomeParametro) {
+                if (risposta[nomeParametro] != undefined && risposta[nomeParametro] != null)
+                    return risposta[nomeParametro];
+                else
+                    return "Dato non disponibile";
+            }
+
+            function Main(rispostaP, rispostaS) {
+                document.getElementById("ip").innerHTML = ritorna(rispostaP, "ip");
+                document.getElementById("hostname").innerHTML = ritorna(rispostaP, "hostname");
+                document.getElementById("loc").innerHTML = ritorna(rispostaP, "loc");
+                document.getElementById("city").innerHTML = ritorna(rispostaP, "city");
+                document.getElementById("region").innerHTML = ritorna(rispostaP, "region");
+                document.getElementById("country").innerHTML = ritorna(rispostaP, "country");
+                document.getElementById("postal").innerHTML = ritorna(rispostaP, "postal");
+                document.getElementById("timezone").innerHTML = ritorna(rispostaP, "timezone");
+                document.getElementById("org").innerHTML = ritorna(rispostaP, "org");
+                document.getElementById("ipType").innerHTML = ritorna(rispostaS, "ipType");
+                document.getElementById("isp").innerHTML = ritorna(rispostaS, "isp");
+                document.getElementById("stato").innerHTML = "";
+                document.getElementById("tabella").deleteRow(0);
+            }
+
+            function avvia() {
+                document.getElementById("stato").innerHTML = "Ricerca dati in corso...";
+                document.getElementById("btnAvvia").disabled = true;
+                document.getElementById("tabella").deleteRow(0);
+                leggiDatiPrincipali("https://ipinfo.io/json", "https://extreme-ip-lookup.com/json/");
+            }
+        </script>
+    </head>
+    <body class="mx-auto">
+        <main role="main" class="container" style="padding-top: 50px;">
+            <noscript>
+                <h3 style="text-align: center;">
+                    Attenzione! Per il funzionamento del progetto, è necessaria la compatibilità del proprio browser con
+                    Javascript. Verificarne l'abilitazione.
+                </h3>
+            </noscript>
+            <h3 style="text-align: center; padding-bottom: 20px;">
+                Progetto <i>Informazioni Connessione ad Internet</i> - Componente di indicizzazione
+            </h3>
+            <div class="modal" tabindex="-1" role="dialog" id="avvertimento-api">
+                <div class="modal-dialog" role="document" style="max-width: 650px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">ATTENZIONE!</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="text-align: justify">
+                            Il software non raccoglie alcun tipo di dato degli utenti finali,
+                            ma si appoggia alle API dei noti portali specializzati IPInfo e ExtremeIPLookup,
+                            che potrebbero raccoglierne.
+                            <br/>
+                            Sebbene il loro utilizzo sia stato testato e si possano ritenere affidabili e sicuri,
+                            risulta fondamentale informare l'utente e metterlo in condizione di scegliere a chi
+                            affidare le proprie informazioni nella più totale libertà e consapevolezza.
+                            <br/>
+                            Grazie ;)
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Chiudi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-bordered table-hover" id="tabella">
+                <thead>
+                    <tr>
+                        <td colspan="2" style="text-align: center">
+                            <button id="btnAvvia" type="button" class="btn btn-primary" onclick="avvia()">AVVIA</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;">
+                            <span id="stato">Avvia la ricerca dei dati per iniziare...</span>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>
+                            Indirizzo IPv4
+                        </th>
+                        <td>
+                            <span id="ip">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Nome di host associato
+                        </th>
+                        <td>
+                            <span id="hostname">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Coordinate geografiche
+                        </th>
+                        <td>
+                            <span id="loc">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Citt&agrave;
+                        </th>
+                        <td>
+                            <span id="city">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Regione
+                        </th>
+                        <td>
+                            <span id="region">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Paese (nazione)
+                        </th>
+                        <td>
+                            <span id="country">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Codice postale
+                        </th>
+                        <td>
+                            <span id="postal">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Zona oraria (fuso orario)
+                        </th>
+                        <td>
+                            <span id="timezone">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Organizzazione
+                        </th>
+                        <td>
+                            <span id="org">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Provider dei servizi Internet (ISP)
+                        </th>
+                        <td>
+                            <span id="isp">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Destinazione di utilizzo
+                        </th>
+                        <td>
+                            <span id="ipType">Avvia la ricerca...</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            var avverimentoMostrato = localStorage.getItem('avvertimentoMostrato');
+            if (avverimentoMostrato == null) {
+                localStorage.setItem('avvertimentoMostrato', 1);
+                $('#avvertimento-api').modal('show');
+            } else {
+                console.log("Avvertimento API già mostrato.");
+            }
+        </script>
+    </body>
+</html>
